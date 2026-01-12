@@ -41,8 +41,6 @@ tags = merge(var.public_subnet_tags, {
 
   availability_zone = var.azs[count.index]
 
-map_public_ip_on_launch = true
-
 depends_on = [aws_internet_gateway.IGW]
 
 }
