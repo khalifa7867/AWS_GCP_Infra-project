@@ -35,6 +35,11 @@ jobs:
         with:
           terraform_version: 1.13.5
 
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_version: v0.52.0
+
       - name: Init TFLint
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
