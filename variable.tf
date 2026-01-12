@@ -7,6 +7,7 @@ variable "Project_name" {
 }
 
 variable "region" {
+  type = string
   default = "ap-south-1"
 }
 
