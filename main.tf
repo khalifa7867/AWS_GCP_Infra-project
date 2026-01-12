@@ -131,3 +131,44 @@ module "eks" {
 
 }
 
+# GitHub Actions Runner IAM Role (IRSA)
+resource "aws_iam_role" "github_runner" {
+  name = "GitHubRunnerRole-${var.aws_cluster_name}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = module.eks.oidc_provider_arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "${module.eks.oidc_provider_url}:sub" = "system:serviceaccount:actions-runner-system:github-runner-sa"
+            "${module.eks.oidc_provider_url}:aud" = "sts.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Project_name = var.Project_name
+    envinorment  = var.envinorment
+  }
+
+  depends_on = [module.eks]
+}
+
+resource "aws_iam_role_policy_attachment" "github_runner_ecr" {
+  role       = aws_iam_role.github_runner.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+}
+
+resource "aws_iam_role_policy_attachment" "github_runner_eks" {
+  role       = aws_iam_role.github_runner.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
+
