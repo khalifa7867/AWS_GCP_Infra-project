@@ -100,10 +100,7 @@ resource "aws_iam_role" "github_runner" {
     ]
   })
 
-  tags = {
-    Project_name = var.Project_name
-    envinorment  = var.envinorment
-  }
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "github_runner_ecr" {
