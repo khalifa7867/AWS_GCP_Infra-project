@@ -80,32 +80,41 @@ jobs:
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
-            Terraform_Plan: ${{ steps.plan.outputs.stdout }}
+          Terraform_Plan: ${{ steps.plan.outputs.stdout }}
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            `Terraform Format output` `${{ steps.fmt.outcome }}`\
-            `Terraform Validate output` `${{ steps.validate.outcome }}`\
-            `Terraform Plan output` `\n\`\`\` \n ${process.env.Terraform_Plan} \n\`\`\``
-
-            *pushed by: @${{ github.actor }}, Action: \`${{ github.action }}\`* 
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
             
-            github.issues.createComment({
-              issue_number: context.payload.pull_request.number,
+            <details><summary>Show Plan</summary>
+            
+            \`\`\`terraform
+            ${process.env.Terraform_Plan}
+            \`\`\`
+            
+            </details>
+            
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: output
             })
 
-            - name: Terraform plan status
-            if: steps.plan.outcome == 'failure'
-              run: exit 1
+      - name: Terraform plan status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
 
-            - name: upload tfplan file
-              uses: actions/upload-artifact@v4
-              with:
-                name: tfplan
-                path: tfplan
+      - name: Upload tfplan file
+        uses: actions/upload-artifact@v4
+        if: github.event_name == 'push'
+        with:
+          name: tfplan
+          path: tfplan
 
   apply:
     # terraform merge on main branch
@@ -135,14 +144,6 @@ jobs:
         with:
           name: tfplan
           path: .
+          
       - name: Terraform Apply
-        run: terraform apply  --auto-approve -input=false tfplan
-
-
-
-
-              
-        
-       
-
-            
+        run: terraform apply -auto-approve -input=false tfplan
