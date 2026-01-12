@@ -1,0 +1,49 @@
+name: destroy eks infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm-destroy:
+        description: 'Type "yes" to confirm destruction of infrastructure'
+        required: true
+        default: 'no'
+        type: string
+
+env:
+   TF_LOG: INFO
+   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}       
+
+
+jobs:   
+    destroy:
+      name: "Terraform Destroy EKS Infrastructure"
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          shell: bash
+
+
+      steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Setup Terraform
+            uses: hashicorp/setup-terraform@v3
+            with:
+              terraform_version: 1.13.5
+
+          - name: Terraform Init
+            id: init
+            run: terraform init
+
+          - name: Terraform Destroy
+            id: destroy
+            if: ${{ github.event.inputs.confirm-destroy == 'yes' }}
+            run: terraform destroy -auto-approve
+
+          - name: Cancel Destroy
+            if: ${{ github.event.inputs.confirm-destroy != 'yes' }}
+            run: echo "Destroy operation cancelled. To proceed, please type 'yes' in the confirm-destroy input."
+          
+      
