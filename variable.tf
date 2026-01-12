@@ -1,8 +1,10 @@
 variable "envinorment" {
+  type = string
   default = "dev"
 }
 
 variable "Project_name" {
+  type = string
     default = "aws_gcp_infra_provisioning"
 }
 
