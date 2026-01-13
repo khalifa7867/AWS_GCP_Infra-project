@@ -20,7 +20,7 @@ permissions:
 jobs:
     # plan on pull request
   plan:
-    name: "Terraform EKS Provisioning"
+    name: "Terraform EKS Provisioning in ap-south region"
     runs-on: ubuntu-latest
     defaults:
       run:
