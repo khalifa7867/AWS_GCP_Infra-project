@@ -71,7 +71,7 @@ module "eks" {
 
     runners = {
       instance_types   = ["t3.medium"]
-      desired_capacity = 1
+      desired_capacity = 2
       max_size         = 20
       min_size         = 1      # Scale to zero when idle
       capacity_type    = "SPOT" # Save 70% cost
