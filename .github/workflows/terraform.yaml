@@ -15,12 +15,13 @@ env:
 permissions:
     contents: read
     issues: write
+    pull-requests: write
 
 
 jobs:
     # plan on pull request
   plan:
-    name: "Terraform EKS Provisioning"
+    name: "Terraform EKS Provisioning in ap-south region"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -111,7 +112,7 @@ jobs:
 
       - name: Upload tfplan file
         uses: actions/upload-artifact@v4
-        if: github.event_name == 'push'
+        if: github.event_name == 'pull_request'
         with:
           name: tfplan
           path: tfplan
