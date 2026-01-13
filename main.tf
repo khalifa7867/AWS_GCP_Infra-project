@@ -71,7 +71,7 @@ module "eks" {
 
     runners = {
       instance_types   = ["t3.small"]
-      desired_capacity = 2
+      desired_capacity = 1
       max_size         = 20
       min_size         = 1           # Scale to zero when idle
       capacity_type    = "ON_DEMAND" # Save 70% cost
